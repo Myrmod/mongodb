@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  db:
+    build:
+      context: ./database
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_URL: ${DB_URL}
+    ports:
+      - ${DB_PORT:-27017}:27017
+    volumes:
+      - mongodb_data_container:/data/db
+    network_mode: bridge
+
+  nodeserver:
+    build:
+      context: .
+    depends_on:
+      - db
+    environment:
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DB_URL: ${DB_URL}
+    restart: unless-stopped
+    network_mode: bridge
+
+volumes:
+  mongodb_data_container:
